@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0e14">
+<title>PRE-BUY CHECKLIST · Discovery 4 SDV6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e14;
+    --bg-2:#0f151d;
+    --panel:#111a24;
+    --panel-2:#162231;
+    --border:#1e2d3e;
+    --border-strong:#2a3e55;
+    --text:#e3ecf5;
+    --muted:#7589a0;
+    --muted-2:#4a5a6e;
+    --ok:#00d68f;
+    --warn:#ffb020;
+    --crit:#ff4757;
+    --info:#4ea1ff;
+    --accent:#c7ff4e;
+    --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+    --sans:'Manrope',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
+  body{
+    background-image:
+      radial-gradient(1200px 600px at 10% -10%,rgba(199,255,78,.04),transparent 60%),
+      radial-gradient(800px 400px at 90% 110%,rgba(78,161,255,.04),transparent 60%),
+      linear-gradient(to bottom,var(--bg),var(--bg-2));
+    min-height:100vh;padding:16px 14px 80px;
+  }
+  a{color:var(--info);text-decoration:none}
+  input,textarea,button{font-family:inherit;color:inherit}
+
+  /* ── Header ─────────────────────────── */
+  .hud{
+    max-width:860px;margin:0 auto 18px;
+    border:1px solid var(--border);background:var(--panel);border-radius:10px;overflow:hidden;
+  }
+  .hud-top{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:10px 14px;border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,rgba(199,255,78,.04),transparent);
+  }
+  .brand{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:8px}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .utc{font-family:var(--mono);font-size:10px;color:var(--muted-2);letter-spacing:.1em}
+  .hud-title{padding:14px 16px 4px}
+  .hud-title h1{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  .hud-title .sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.05em}
+
+  /* Vehicle strip */
+  .veh{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);
+    border-top:1px solid var(--border);margin-top:12px;
+  }
+  .veh .cell{background:var(--panel);padding:10px 12px}
+  .veh label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--muted-2);text-transform:uppercase;margin-bottom:4px}
+  .veh input{background:transparent;border:none;outline:none;width:100%;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);padding:0}
+  .veh input::placeholder{color:var(--muted-2)}
+
+  /* Score panel */
+  .score{
+    display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:1px;background:var(--border);
+    border-top:1px solid var(--border);
+  }
+  .score .cell{background:var(--panel-2);padding:10px 12px}
+  .score .k{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
+  .score .v{font-family:var(--mono);font-size:18px;font-weight:700;margin-top:2px}
+  .score .v.ok{color:var(--ok)}
+  .score .v.warn{color:var(--warn)}
+  .score .v.crit{color:var(--crit)}
+  .score .v.accent{color:var(--accent)}
+
+  .progress{height:3px;background:var(--border);position:relative}
+  .progress .bar{position:absolute;top:0;left:0;height:100%;background:var(--accent);transition:width .3s ease;box-shadow:0 0 12px rgba(199,255,78,.5)}
+
+  /* ── Sections ─────────────────────────── */
+  main{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+  .section{
+    border:1px solid var(--border);border-radius:10px;background:var(--panel);overflow:hidden;
+  }
+  .sh{
+    display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;
+    background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
+    border-bottom:1px solid transparent;user-select:none;
+  }
+  .section.open .sh{border-bottom-color:var(--border)}
+  .sh .idx{font-family:var(--mono);font-size:10px;color:var(--muted-2);letter-spacing:.1em;min-width:32px}
+  .sh .ttl{flex:1;font-weight:700;letter-spacing:-.01em;font-size:15px}
+  .sh .meta{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em}
+  .sh .chev{color:var(--muted-2);transition:transform .2s}
+  .section.open .chev{transform:rotate(90deg);color:var(--accent)}
+
+  .sb{padding:6px 0 10px;display:none}
+  .section.open .sb{display:block}
+
+  /* items */
+  .item{
+    display:grid;grid-template-columns:auto auto 1fr;gap:10px;
+    padding:10px 14px;border-bottom:1px solid rgba(30,45,62,.4);
+    align-items:start;
+  }
+  .item:last-child{border-bottom:none}
+  .item.checked{background:rgba(0,214,143,.03)}
+  .item.failed{background:rgba(255,71,87,.04)}
+
+  /* checkbox */
+  .cb{
+    width:20px;height:20px;border:1.5px solid var(--border-strong);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:2px;
+    transition:all .15s;background:var(--bg-2);flex-shrink:0;
+  }
+  .cb.on{background:var(--ok);border-color:var(--ok)}
+  .cb.on::after{content:"";width:5px;height:9px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+  .cb.fail{background:var(--crit);border-color:var(--crit)}
+  .cb.fail::after{content:"×";color:var(--bg);font-weight:700;font-size:14px;line-height:1;font-family:var(--mono)}
+
+  /* severity badge */
+  .sev{
+    font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;
+    padding:3px 6px;border-radius:3px;text-transform:uppercase;
+    margin-top:3px;white-space:nowrap;height:fit-content;
+  }
+  .sev.crit{background:rgba(255,71,87,.12);color:var(--crit);border:1px solid rgba(255,71,87,.3)}
+  .sev.warn{background:rgba(255,176,32,.1);color:var(--warn);border:1px solid rgba(255,176,32,.25)}
+  .sev.info{background:rgba(78,161,255,.08);color:var(--info);border:1px solid rgba(78,161,255,.2)}
+
+  .body{min-width:0}
+  .body .t{font-size:14px;line-height:1.45;font-weight:500}
+  .body .hint{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+  .body .hint code{font-family:var(--mono);font-size:11px;background:var(--bg);color:var(--accent);padding:1px 5px;border-radius:3px;border:1px solid var(--border)}
+
+  /* fail toggle */
+  .fail-btn{
+    font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+    padding:3px 7px;border-radius:3px;background:transparent;
+    border:1px solid var(--border-strong);color:var(--muted);
+    cursor:pointer;margin-top:6px;margin-right:6px;
+  }
+  .fail-btn:hover{color:var(--crit);border-color:var(--crit)}
+  .fail-btn.active{color:var(--crit);border-color:var(--crit);background:rgba(255,71,87,.08)}
+
+  .note{
+    display:none;margin-top:8px;width:100%;
+    background:var(--bg);border:1px solid var(--border);border-radius:5px;
+    padding:7px 9px;font-size:12px;resize:vertical;min-height:50px;
+    font-family:var(--sans);
+  }
+  .item.checked .note,.item.failed .note{display:block}
+  .note:focus{outline:none;border-color:var(--border-strong)}
+
+  /* ── Decision panel ─────────────────────────── */
+  .decision{
+    max-width:860px;margin:14px auto 0;
+    border:1px solid var(--border);background:var(--panel);border-radius:10px;overflow:hidden;
+  }
+  .decision-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+  .decision-grid .cell{background:var(--panel);padding:14px 16px}
+  .decision-grid .k{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+  .decision-grid .v{font-family:var(--mono);font-size:22px;font-weight:700}
+  .decision-grid .v.ok{color:var(--ok)}
+  .decision-grid .v.crit{color:var(--crit)}
+  .decision-grid .v.accent{color:var(--accent)}
+  .verdict{
+    padding:14px 16px;border-top:1px solid var(--border);
+    font-family:var(--mono);font-size:12px;line-height:1.6;
+    display:flex;align-items:center;gap:10px;
+  }
+  .verdict .stamp{
+    font-weight:800;letter-spacing:.2em;padding:4px 10px;border-radius:3px;
+    font-size:11px;
+  }
+  .verdict.go .stamp{background:var(--ok);color:var(--bg)}
+  .verdict.maybe .stamp{background:var(--warn);color:var(--bg)}
+  .verdict.nogo .stamp{background:var(--crit);color:var(--bg)}
+
+  /* actions */
+  .actions{
+    max-width:860px;margin:14px auto 0;display:flex;gap:8px;flex-wrap:wrap;
+  }
+  .btn{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    padding:9px 14px;border-radius:6px;cursor:pointer;border:1px solid var(--border-strong);
+    background:var(--panel);color:var(--text);font-weight:600;flex:1;min-width:120px;
+    transition:all .15s;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.danger:hover{border-color:var(--crit);color:var(--crit)}
+
+  /* footer */
+  footer{
+    max-width:860px;margin:30px auto 0;text-align:center;
+    font-family:var(--mono);font-size:10px;color:var(--muted-2);letter-spacing:.12em;
+  }
+
+  @media (max-width:640px){
+    .veh{grid-template-columns:repeat(2,1fr)}
+    .score{grid-template-columns:1fr 1fr}
+    .decision-grid{grid-template-columns:1fr}
+    .hud-title h1{font-size:18px}
+  }
+
+  /* modal */
+  .modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+    display:none;align-items:center;justify-content:center;padding:20px;z-index:100;
+  }
+  .modal.show{display:flex}
+  .modal-box{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    max-width:600px;width:100%;max-height:80vh;overflow:auto;
+  }
+  .modal-box h3{padding:14px 16px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
+  .modal-box pre{padding:14px 16px;font-family:var(--mono);font-size:11px;white-space:pre-wrap;line-height:1.5;color:var(--text)}
+  .modal-box .close{padding:10px 16px;border-top:1px solid var(--border);text-align:right}
+</style>
+</head>
+<body>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="hud-top">
+    <div class="brand"><span class="dot"></span>BESTFIXING · PRE-BUY CHECKLIST</div>
+    <div class="utc" id="utc">—</div>
+  </div>
+  <div class="hud-title">
+    <h1>Land Rover Discovery 4 · SDV6 245 SE</h1>
+    <div class="sub">V_306DT · BIETURBO SECUENCIAL · MY2010–2013</div>
+  </div>
+  <div class="veh">
+    <div class="cell"><label>Matrícula</label><input id="f_plate" placeholder="—"></div>
+    <div class="cell"><label>Kilómetros</label><input id="f_km" placeholder="—" inputmode="numeric"></div>
+    <div class="cell"><label>Precio pedido (€)</label><input id="f_price" value="10600" inputmode="numeric"></div>
+    <div class="cell"><label>Fecha inspección</label><input id="f_date"></div>
+  </div>
+  <div class="score">
+    <div class="cell"><div class="k">Progreso</div><div class="v accent" id="sc_prog">0 / 0</div></div>
+    <div class="cell"><div class="k">OK</div><div class="v ok" id="sc_ok">0</div></div>
+    <div class="cell"><div class="k">Fallos</div><div class="v crit" id="sc_fail">0</div></div>
+    <div class="cell"><div class="k">Críticos fallados</div><div class="v crit" id="sc_critfail">0</div></div>
+  </div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+</div>
+
+<main id="sections"></main>
+
+<!-- Decision -->
+<div class="decision">
+  <div class="decision-grid">
+    <div class="cell">
+      <div class="k">Descuento recomendado</div>
+      <div class="v crit" id="d_discount">0 €</div>
+    </div>
+    <div class="cell">
+      <div class="k">Precio objetivo negociación</div>
+      <div class="v accent" id="d_target">— €</div>
+    </div>
+  </div>
+  <div class="verdict" id="verdict">
+    <span class="stamp">PENDIENTE</span>
+    <span id="verdict-txt">Completa la inspección para obtener veredicto</span>
+  </div>
+</div>
+
+<!-- Actions -->
+<div class="actions">
+  <button class="btn" onclick="exportTxt()">Exportar informe</button>
+  <button class="btn" onclick="shareWa()">Enviar por WhatsApp</button>
+  <button class="btn danger" onclick="resetAll()">Reset</button>
+</div>
+
+<footer>
+  BESTFIXING LAB · FONTANELLA 14 · BCN<br>
+  v1.0 · 2026
+</footer>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="modal-title">Informe</h3>
+    <pre id="modal-body"></pre>
+    <div class="close"><button class="btn" onclick="closeModal()">Cerrar</button></div>
+  </div>
+</div>
+
+<script>
+/* =============================================================
+   DATOS DEL CHECKLIST
+   sev: crit (dealbreaker) / warn (importante) / info (anotación)
+   cost: coste aproximado si falla (para cálculo descuento)
+   ============================================================= */
+const CHECKLIST = [
+  {
+    title:"Pre-visita · Llamada telefónica",
+    items:[
+      {t:"Confirmar que NO arranquen el coche antes de llegar", h:"Imprescindible para escuchar el motor en frío real. Si ya está caliente cuando llegas → sospecha.", sev:"crit", cost:0},
+      {t:"Pedir VIN completo y verificar en DGT", h:"Consulta gratis en <code>sede.dgt.gob.es</code> → cargas, embargos, ITV, titularidades. Si figuran múltiples dueños recientes, mal.", sev:"warn", cost:0},
+      {t:"Preguntar por factura de cambio de cadena de distribución", h:"Punto crítico del 306DT. Ubicada en la parte trasera del motor → mano de obra enorme. Típicamente falla 180–280k km.", sev:"crit", cost:3500},
+      {t:"Preguntar por historial de suspensión (aunque sea SE con muelles)", h:"SE lleva muelles normalmente. Confirmar que nadie ha intentado conversión rara. Preguntar por amortiguadores.", sev:"warn", cost:600},
+      {t:"Preguntar si ha estado en pistas/off-road intenso", h:"El Discovery es apto pero muchos dueños lo castigan. Buscar uso mixto familiar/carretera.", sev:"info", cost:0},
+      {t:"Pedir todas las facturas de mantenimiento en PDF por email", h:"Si se niegan o dan largas → bandera roja. Dealer serio tiene historial.", sev:"crit", cost:0},
+    ]
+  },
+  {
+    title:"Documentación · Antes de tocar el coche",
+    items:[
+      {t:"Permiso de circulación coincide con VIN del chasis", h:"VIN físico: bajo capó, pilar B puerta conductor, y parabrisas. Los tres deben coincidir con papeles.", sev:"crit", cost:0},
+      {t:"Ficha técnica (ITV) vigente y sin defectos graves anteriores", h:"Fíjate en observaciones: fugas, emisiones, holguras. Sucesivas ITV con defectos leves repetidos = patrón.", sev:"crit", cost:0},
+      {t:"Libro de mantenimiento o facturas por escrito", h:"Mínimo: últimos 3 cambios de aceite (cada 15–20k km), un cambio de filtros combustible, cambio líquido frenos.", sev:"warn", cost:500},
+      {t:"Informe de taller Land Rover oficial (si existe)", h:"Los sistemas JLR quedan trazados. Pide impresión del historial DealerCONNECT.", sev:"info", cost:0},
+      {t:"Dos llaves entregadas (el anuncio dice 'doble llave')", h:"Segunda llave = 250–400 € codificación. Verifica que ambas abren y arrancan.", sev:"warn", cost:350},
+      {t:"Bola de enganche con homologación (el anuncio la menciona)", h:"Debe figurar en ficha técnica. Si no está homologada → multa + problema ITV.", sev:"warn", cost:300},
+    ]
+  },
+  {
+    title:"Arranque en FRÍO · Los primeros 10 segundos",
+    items:[
+      {t:"Capó abierto ANTES de arrancar · tú activas el arranque", h:"Pide la llave. Enciende desde dentro con todas las ventanillas abiertas. Graba audio con el móvil.", sev:"crit", cost:0},
+      {t:"Sin cascabeleo metálico los primeros 5 segundos", h:"El 'rattle' típico = cadena de distribución estirada. <code>P0016/P0017/P000A/P000B</code> son sus códigos asociados.", sev:"crit", cost:3500},
+      {t:"Arranca al primer intento, sin cranking prolongado", h:"Más de 3 segundos girando = inyectores o bomba inyección. Investigar.", sev:"warn", cost:1200},
+      {t:"Sin humo blanco denso persistente tras 30 seg", h:"Humo blanco que no desaparece = refrigerante en cámaras (cooler EGR agrietado o culata).", sev:"crit", cost:1000},
+      {t:"Sin humo azul al acelerar en vacío", h:"Azul = aceite quemado = turbo (retenes) o desgaste motor.", sev:"crit", cost:2500},
+      {t:"Testigo glow-plugs apaga correctamente", h:"Si queda encendido o parpadea = calentadores defectuosos. Barato (150 €) pero a corregir.", sev:"info", cost:150},
+    ]
+  },
+  {
+    title:"Inspección visual · Motor y bajo capó",
+    items:[
+      {t:"Nivel de anticongelante al máximo y color limpio (rosa/naranja)", h:"Por debajo del mínimo o restos oleaginosos = cooler EGR o culata. Coste 800–1200 €.", sev:"crit", cost:1000},
+      {t:"Nivel de aceite correcto y color ámbar (no negro total)", h:"Lechoso = agua. Negro denso con olor a combustible = dilución por inyectores.", sev:"warn", cost:600},
+      {t:"Sin fugas visibles en parte trasera del motor", h:"La zona de la cadena está atrás. Manchas de aceite fresco = cárter del timing chain filtrando.", sev:"crit", cost:2500},
+      {t:"Colector de admisión limpio en entradas (swirl flaps)", h:"Si se ven válvulas de aleteo en mal estado → pueden soltarse al motor. Blanking kit = 200 €.", sev:"warn", cost:300},
+      {t:"Correa de accesorios sin grietas, tensor sin holguras", h:"Se cambia cada 100k km. Rotura = batería/dirección/AC fuera de servicio.", sev:"warn", cost:250},
+      {t:"Radiador y condensador sin golpes ni barro/hierba", h:"Indicios de off-road o impactos frontales no declarados.", sev:"info", cost:0},
+      {t:"Ningún testigo encendido en cuadro con motor en marcha", h:"Motor, ABS, airbag, tracción. Todos deben apagarse tras el arranque.", sev:"crit", cost:800},
+    ]
+  },
+  {
+    title:"Inspección carrocería y chasis",
+    items:[
+      {t:"Pintura uniforme, sin paneles retocados", h:"Comprobar con medidor de espesor si traes (amazon 30€). Paneles pintados = accidente.", sev:"warn", cost:1500},
+      {t:"Bajos sin corrosión estructural (traviesas, largueros)", h:"En SUV este kilometraje: superficial sí, estructural NO. Mete la mano si puedes.", sev:"crit", cost:2000},
+      {t:"Parachoques y faros cuadrados, sin juntas raras", h:"Desalineaciones = choque mal reparado.", sev:"warn", cost:0},
+      {t:"Neumáticos seminuevos (el anuncio lo dice) y misma marca en cada eje", h:"En 4x4 permanente, mezclar marcas/desgastes daña diferenciales. Revisa DOT: máx 5 años de antigüedad.", sev:"warn", cost:600},
+      {t:"Discos de freno sin labio marcado, pastillas > 5mm", h:"Coste freno completo Disco 4 = 500–800 €.", sev:"info", cost:600},
+      {t:"Holguras en palieres/rótulas al mover ruedas (gato hidráulico)", h:"Rótula inferior Disco 4 = 250 €/lado. Rótulas superiores = 180 €/lado.", sev:"warn", cost:500},
+      {t:"Tubo de escape sin humo residual de aceite al tocarlo", h:"Pásale el dedo por dentro. Negro seco = OK. Negro aceitoso = anillos/turbo.", sev:"warn", cost:1500},
+    ]
+  },
+  {
+    title:"Ralentí · 60 segundos con motor caliente",
+    items:[
+      {t:"Ralentí estable a ~750 rpm sin oscilaciones", h:"Oscilación de ±100 rpm = inyector defectuoso o EGR sucia.", sev:"warn", cost:800},
+      {t:"Sin vibración excesiva del volante ni palanca", h:"El SDV6 es muy suave. Vibraciones = un cilindro fallando.", sev:"warn", cost:600},
+      {t:"Sin testigos intermitentes (ABS, tracción, airbag)", h:"Intermitentes = sensores / conexiones. Barato pero acumulable.", sev:"info", cost:300},
+      {t:"AC enfría rápido y sin ruidos raros del compresor", h:"Compresor AC Disco 4 = 700 € + gas. Prueba con modo MAX frío.", sev:"warn", cost:700},
+      {t:"Parrilla delantera activa (shutters) abre/cierra si procede", h:"Desde 2010 hay control térmico activo. Fallo = sensor térmico.", sev:"info", cost:200},
+    ]
+  },
+  {
+    title:"Prueba en carretera · Mínimo 15 km mixtos",
+    items:[
+      {t:"Aceleración fuerte y lineal de 2.000 a 4.000 rpm", h:"Tirones o cortes arriba = turbo pequeño (biturbo secuencial). Reparación 2.000–3.500 €.", sev:"crit", cost:2800},
+      {t:"Cambios ZF 6HP suaves en todas las marchas", h:"Tirones, patinaje, retraso al meter D o R → válvulas del solenoide/mechatronic. Rev = 1.500–2.500 €.", sev:"crit", cost:2000},
+      {t:"Kickdown responde inmediato", h:"Pisa a fondo a 50 km/h. Debe bajar 2 marchas sin dudar.", sev:"warn", cost:0},
+      {t:"Sin ruidos de transferencia 4x4 al acelerar", h:"Click repetitivo = crucetas/cardán. Diferencial central Haldex = 800–1500 €.", sev:"crit", cost:1200},
+      {t:"Frena recto, sin vibración en pedal", h:"Vibración = discos alabeados. Tirón lateral = pinza agarrotada o neumático.", sev:"warn", cost:400},
+      {t:"Dirección asistida silenciosa, sin temblor al girar a tope parado", h:"Ruido ronco al girar parado = bomba hidráulica. Sustitución = 500–800 €.", sev:"warn", cost:650},
+      {t:"Suspensión absorbe baches sin metalazos", h:"SE lleva muelles: OK si tras bache hay 1 rebote limpio. Metalazos = silentblocks.", sev:"warn", cost:700},
+      {t:"Temperatura motor estable en zona normal tras 15 km", h:"Sube y baja = termostato. Sube y no baja = bomba agua o aire en circuito.", sev:"crit", cost:900},
+    ]
+  },
+  {
+    title:"Lectura OBD · Centralita completa",
+    items:[
+      {t:"Lectura con GAP IIDTool, Foxwell NT510 o taller especializado", h:"30–50 € en un taller Land Rover. Pide lectura de TODOS los módulos, no solo motor.", sev:"crit", cost:50},
+      {t:"Sin códigos históricos de timing chain (P0016/P0017/P000A/P000B)", h:"Aunque estén borrados, pueden reaparecer. Son los DTCs del desfase árbol de levas.", sev:"crit", cost:3500},
+      {t:"Sin códigos de inyectores (P0200–P0209)", h:"Inyector piezoeléctrico Bosch = 400–600 €/unidad. Son 6.", sev:"warn", cost:1800},
+      {t:"Sin códigos de turbo (P0234, P0299)", h:"Sobrepresión o underboost = turbo pequeño comprometido.", sev:"crit", cost:2800},
+      {t:"Sin códigos DPF (P2002, P244A)", h:"Filtro de partículas saturado o diferencial alto = regeneración fallida.", sev:"warn", cost:1500},
+      {t:"Módulo airbag sin códigos activos", h:"Airbag con fallo = ITV suspendida y ejecución suspendida por seguridad.", sev:"crit", cost:400},
+    ]
+  },
+  {
+    title:"Post-inspección · Decisión",
+    items:[
+      {t:"Fotos del cuadro con kms reales", h:"Para comparar con el anuncio y para comprobar que no se ha reseteado.", sev:"info", cost:0},
+      {t:"Fotos VIN (capó, pilar B, parabrisas)", h:"Tres VIN visibles deben coincidir. Guárdalos.", sev:"info", cost:0},
+      {t:"Presupuesto mínimo anual de mantenimiento presupuestado", h:"Realista: 1.500–2.000 €/año en Discovery 4 bien llevado a esta edad.", sev:"info", cost:0},
+      {t:"Precio final negociado por debajo de 10.600 €", h:"Cualquier fallo crítico detectado se descuenta. El calculador de abajo te da el objetivo.", sev:"info", cost:0},
+      {t:"Contrato de compraventa con 15 días de garantía mínima legal", h:"Si es dealer → 12 meses por ley. Particular → 6 meses garantía saneamiento. Que conste por escrito.", sev:"crit", cost:0},
+    ]
+  },
+];
+
+/* ============================================================= */
+const $ = id => document.getElementById(id);
+const state = JSON.parse(localStorage.getItem('disco_state') || '{}');
+
+function save(){ localStorage.setItem('disco_state', JSON.stringify(state)); }
+
+function render(){
+  const root = $('sections');
+  root.innerHTML = '';
+  CHECKLIST.forEach((sec, si) => {
+    const secEl = document.createElement('section');
+    secEl.className = 'section' + (state[`open_${si}`] !== false ? ' open' : '');
+    const n = sec.items.length;
+    const checked = sec.items.filter((_,ii) => state[`s${si}i${ii}`] === 'ok').length;
+    const failed = sec.items.filter((_,ii) => state[`s${si}i${ii}`] === 'fail').length;
+    secEl.innerHTML = `
+      <div class="sh" onclick="toggleSec(${si})">
+        <div class="idx">${String(si+1).padStart(2,'0')}</div>
+        <div class="ttl">${sec.title}</div>
+        <div class="meta">${checked+failed}/${n}</div>
+        <div class="chev">▶</div>
+      </div>
+      <div class="sb">
+        ${sec.items.map((it, ii) => {
+          const st = state[`s${si}i${ii}`];
+          const note = state[`s${si}i${ii}_n`] || '';
+          const cbCls = st === 'ok' ? 'on' : st === 'fail' ? 'fail' : '';
+          const itCls = st === 'ok' ? 'checked' : st === 'fail' ? 'failed' : '';
+          return `
+            <div class="item ${itCls}">
+              <div class="cb ${cbCls}" onclick="toggle(${si},${ii})"></div>
+              <span class="sev ${it.sev}">${it.sev === 'crit' ? 'crít' : it.sev === 'warn' ? 'imp' : 'nota'}</span>
+              <div class="body">
+                <div class="t">${it.t}</div>
+                <div class="hint">${it.h}</div>
+                <button class="fail-btn ${st==='fail'?'active':''}" onclick="markFail(${si},${ii})">Marcar como FALLO</button>
+                <textarea class="note" placeholder="Notas, fotos, lo que sea..." oninput="noteChange(${si},${ii},this.value)">${note}</textarea>
+              </div>
+            </div>`;
+        }).join('')}
+      </div>`;
+    root.appendChild(secEl);
+  });
+  updateScore();
+}
+
+function toggleSec(si){
+  state[`open_${si}`] = state[`open_${si}`] === false;
+  save();
+  render();
+}
+
+function toggle(si, ii){
+  const k = `s${si}i${ii}`;
+  state[k] = state[k] === 'ok' ? null : 'ok';
+  save(); render();
+}
+
+function markFail(si, ii){
+  const k = `s${si}i${ii}`;
+  state[k] = state[k] === 'fail' ? null : 'fail';
+  save(); render();
+}
+
+function noteChange(si, ii, v){
+  state[`s${si}i${ii}_n`] = v;
+  save();
+  /* no rerender for textarea to keep focus */
+}
+
+function updateScore(){
+  let total = 0, ok = 0, fail = 0, critfail = 0, discount = 0;
+  CHECKLIST.forEach((sec, si) => {
+    sec.items.forEach((it, ii) => {
+      total++;
+      const st = state[`s${si}i${ii}`];
+      if (st === 'ok') ok++;
+      if (st === 'fail'){
+        fail++;
+        if (it.sev === 'crit') critfail++;
+        discount += it.cost || 0;
+      }
+    });
+  });
+  $('sc_prog').textContent = `${ok+fail} / ${total}`;
+  $('sc_ok').textContent = ok;
+  $('sc_fail').textContent = fail;
+  $('sc_critfail').textContent = critfail;
+  $('bar').style.width = ((ok+fail)/total*100)+'%';
+
+  const price = parseInt($('f_price').value.replace(/\D/g,'')) || 10600;
+  const target = Math.max(price - discount, Math.round(price*0.5));
+  $('d_discount').textContent = `-${discount.toLocaleString('es-ES')} €`;
+  $('d_target').textContent = `${target.toLocaleString('es-ES')} €`;
+
+  const v = $('verdict');
+  const t = $('verdict-txt');
+  v.className = 'verdict';
+  if (ok+fail < total*0.8){
+    v.classList.add('maybe');
+    v.querySelector('.stamp').textContent = 'PENDIENTE';
+    t.textContent = 'Completa al menos el 80% del checklist para obtener veredicto';
+  } else if (critfail === 0 && fail <= 3){
+    v.classList.add('go');
+    v.querySelector('.stamp').textContent = 'GO · COMPRAR';
+    t.textContent = `Coche sano. Negocia a ${target.toLocaleString('es-ES')} € y cierra.`;
+  } else if (critfail === 0 && fail > 3){
+    v.classList.add('maybe');
+    v.querySelector('.stamp').textContent = 'REVISAR';
+    t.textContent = `Sin críticos pero ${fail} fallos menores. Solo si baja a ${target.toLocaleString('es-ES')} €.`;
+  } else {
+    v.classList.add('nogo');
+    v.querySelector('.stamp').textContent = 'NO-GO · PASAR';
+    t.textContent = `${critfail} fallo(s) crítico(s) detectado(s). Busca otro candidato.`;
+  }
+}
+
+/* Vehicle fields persistence */
+['f_plate','f_km','f_price','f_date'].forEach(id => {
+  const el = $(id);
+  if (state[id]) el.value = state[id];
+  el.addEventListener('input', () => { state[id] = el.value; save(); updateScore(); });
+});
+
+/* Default date = today */
+if (!state.f_date){
+  const d = new Date();
+  const s = d.toLocaleDateString('es-ES');
+  $('f_date').value = s; state.f_date = s; save();
+}
+
+/* UTC clock */
+function updUtc(){
+  const d = new Date();
+  $('utc').textContent = d.toISOString().slice(11,19) + 'Z';
+}
+setInterval(updUtc, 1000); updUtc();
+
+/* Export */
+function exportTxt(){
+  let out = `PRE-BUY CHECKLIST · LAND ROVER DISCOVERY 4 SDV6 245 SE\n`;
+  out += `========================================================\n\n`;
+  out += `Matrícula:     ${$('f_plate').value || '—'}\n`;
+  out += `Kilómetros:    ${$('f_km').value || '—'}\n`;
+  out += `Precio pedido: ${$('f_price').value} €\n`;
+  out += `Fecha:         ${$('f_date').value}\n\n`;
+  out += `Descuento recomendado: ${$('d_discount').textContent}\n`;
+  out += `Precio objetivo:       ${$('d_target').textContent}\n`;
+  out += `Veredicto:             ${$('verdict').querySelector('.stamp').textContent}\n\n`;
+  CHECKLIST.forEach((sec, si) => {
+    out += `\n── ${sec.title.toUpperCase()} ──\n`;
+    sec.items.forEach((it, ii) => {
+      const st = state[`s${si}i${ii}`];
+      const note = state[`s${si}i${ii}_n`] || '';
+      const mark = st === 'ok' ? '[✓]' : st === 'fail' ? '[✗]' : '[ ]';
+      out += `${mark} ${it.t}\n`;
+      if (note) out += `    → ${note.replace(/\n/g,'\n    ')}\n`;
+    });
+  });
+  $('modal-title').textContent = 'Informe · copia con Ctrl+A · Ctrl+C';
+  $('modal-body').textContent = out;
+  $('modal').classList.add('show');
+}
+function closeModal(){ $('modal').classList.remove('show'); }
+
+function shareWa(){
+  const v = $('verdict').querySelector('.stamp').textContent;
+  const txt = `Inspección Discovery 2010 · ${$('f_plate').value || 's/matrícula'}\n` +
+    `Veredicto: ${v}\n` +
+    `Precio objetivo: ${$('d_target').textContent}\n` +
+    `Descuento: ${$('d_discount').textContent}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt));
+}
+
+function resetAll(){
+  if (!confirm('¿Borrar todo el checklist?')) return;
+  localStorage.removeItem('disco_state');
+  location.reload();
+}
+
+render();
+</script>
+</body>
+</html>
