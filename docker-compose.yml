@@ -1,24 +1,7 @@
 services:
   disco-checklist:
     container_name: disco-checklist
-    image: nginx:alpine
+    build: .
     restart: unless-stopped
     ports:
       - "8090:80"
-    volumes:
-      - ./index.html:/usr/share/nginx/html/index.html:ro
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    networks:
-      - bestfixing
-    labels:
-      # Opcional: si usas Traefik / Cloudflare Tunnel
-      - "traefik.enable=true"
-      - "traefik.http.routers.disco.rule=Host(`disco.bestfixinglab.cloud`)"
-      - "traefik.http.routers.disco.entrypoints=websecure"
-      - "traefik.http.routers.disco.tls.certresolver=letsencrypt"
-      - "traefik.http.services.disco.loadbalancer.server.port=80"
-
-networks:
-  bestfixing:
-    driver: bridge
-    name: bestfixing
